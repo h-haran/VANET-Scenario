@@ -1,1 +1,141 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clc;clear;
+run 'vanet4.mlx';
+run 'vt.m';
+% run 'simulation.mlx';
+Leftx1RT=zeros(100,length(vopal{1}));
+Rightx1LT=zeros(100,length(vopal{2}));
+Topx1Bottom=zeros(100,length(vopal{3}));
+Bottomx1Top=zeros(100,length(vopal{4}));
+ timeinterval=100;
+% generating random speeds
+  % spd=(randsample(1:9.9,9))';
+ 
+t = round(linspace(0, 100, timeinterval),0)';
+ load('spdtop.mat','spd');
+
+  check=zeros(6,16) ; 
+        for j = 1:16
+          %  fprintf('it j : %d \n',j);
+            for i=1:length(Leftx1RT)
+               % fprintf('it i : %d \n',i);
+              
+ for m= 1:11
+     for l =1:11
+         for k=1:14
+              
+% Have issue in Leftx1RT matrix expected output from % RHS %logic is not getting stored in the LHS intead it % got stored %diagnolly %% 
+% Rectified no issue cross checked via handmade 16/4/2025
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+   % Example logic for remaining columns
+  % check(i,j)=spd(mod(j-1, length(spd)) + 1) ;
+ Leftx1RT(i,j) = spd(mod(j-1, length(spd)) + 1)*t(i); % refered open source
+ Rightx1LT(i,m)= 1000-spd(mod(m-1, length(spd)) + 1) * t(i);
+Topx1Bottom(i,l)=100-spd(mod(l-1, length(spd)) + 1) * t(i);
+Bottomx1Top(i,k)=spd(mod(k-1, length(spd)) + 1) * t(i);
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+         end
+     end
+ end
+            end
+        end
+
+    % Animation setup
+grid on;
+xlabel('Distance-axis');
+ylabel('spd*t-axis');
+hold on; 
+
+
+hleft = animatedline('Color', 'g', 'Marker', 'o', 'MarkerSize', 10, 'LineWidth', 2);
+hright = animatedline('Color', 'r', 'Marker', 'o', 'MarkerSize', 10, 'LineWidth', 2);
+htop = animatedline('Color', 'b', 'Marker', 'o', 'MarkerSize', 10, 'LineWidth', 2);
+hbottom = animatedline('Color', 'm', 'Marker', 'o', 'MarkerSize', 10, 'LineWidth', 2);
+
+Animation loop exit flag point
+exitloop1=false; % flag to control exit loop
+exitloop2=false;
+count=0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%% First part
+ for j=1:5 %length(vopal{1}) 
+    flag=false;
+
+    for jj=1:4 % length(vopal{2})
+        flag1=false;
+
+     for kk=1:4 % length(vopal{3})
+         flag2=false;
+
+         for jjj=1:5 %length(vopal{4})
+             flag3=false;
+
+  for i=1:10
+    for ii=1:100
+   clearpoints(hright); % %% For Right to Left
+   addpoints(hright, Rightx1LT(ii,jj), y2(jj)); %%  R 2 L 
+   if i==30     
+   % fprintf('i=%d,jj=%d \n',i,jj);
+   end
+    clearpoints(hleft); %% For Left to Right
+    addpoints(hleft, Leftx1RT(ii,j), y1(j)); %% L 2 R
+     if i==10 && ii==100
+         count=count+1;
+         fprintf('count= %d',count);
+    fprintf('i=%d,j=%d \n',i,j);
+     end
+
+   clearpoints(htop); %% For Top to Down 
+ addpoints(htop,x3(kk),Topx1Bottom(i,kk)); %% T 2 D
+  if i==5  
+ % fprintf('i=%d,kk=%d \n',i,kk);
+  end
+    
+    clearpoints(hbottom);%% For Down to Top
+addpoints(hbottom,x4(jjj),Bottomx1Top(i,jjj)); %% D 2 T
+ if i==5    
+% fprintf('i=%d,jjj=%d \n',i,jjj);
+ end
+
+     drawnow; % Smoothly refreshes the figure
+ java.lang.Thread.sleep(.1); % Sleeps for 1 millisecond
+   
+   end
+  end
+  if jjj==5
+      flag3=true;
+      break;
+  else 
+      continue;
+  end
+         end
+  if kk==4
+         flag2=true;
+         break;
+  
+    else
+       continue;
+   end
+     end
+   if jj==4
+         flag1=true;
+         break;
+  
+    else
+       continue;
+   end
+   end
+    if j==5  %length(vopal{1})
+        flag=true;
+         %  exitloop1;  %% having this here ensures 
+         break;          %% 4 times of ( j )loop else if u have above only 3 times executed
+     end
+ end
+
+   
+
+    
+
+
+%end %%%%%%%%% testing for anime area
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Second part
 
